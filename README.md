@@ -1,6 +1,6 @@
 # ts-networks
 
-Connectivity modeling and feature extraction of time series networks.
+Connectivity modeling and feature extraction of the time series networks.
 
 The library currently provides the following functionality:
 
