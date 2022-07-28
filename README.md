@@ -47,7 +47,7 @@ from tsnetworks load Network
 
 ```python
 import numpy as np
-from ts_networks import Network
+from tsnetworks import Network
 
 # generate an n x t time series matrix
 n, t = 32, 1000
