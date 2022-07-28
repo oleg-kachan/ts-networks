@@ -31,7 +31,7 @@ Persistent topological
 Clone the repository and put `tsnetworks` library to the folder with your scripts. Then, the library can be loaded as:
 
 ```python
-from tsnetworks load Network
+from tsnetworks import Network
 ```
 
 ### Dependendies
