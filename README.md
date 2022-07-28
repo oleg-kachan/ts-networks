@@ -2,6 +2,30 @@
 
 Connectivity modeling and feature extraction of time series networks.
 
+The library currently provides:
+
+#### Connectivity modeling
+- Pearson correlation (via maxumum likelihood and the Ledoit-Wolf shrinkage estimators)
+- Gaussian kernel
+- Mutual information (via Kozachenko-Leonenko estimator)
+
+#### Feature extraction
+
+Information-theoretic
+- entropy of the adjacency and Laplacian matrices of the network
+
+Graph-theoretic
+- degrees (vertex and average of the vertex neighborhood)
+- centralities (betwenneess and closeness)
+- clustering coefficient
+
+Spectral graph-theoretic
+- eigenvalues of the adjacency and the Laplacian matrices of the network
+
+Persistent topological
+- persistence diagram
+- persistence statistics (total persistence and persistence entropy)
+
 ## Installation
 
 Clone the repository and put `tsnetworks` library to the folder with your scripts. Then, the library can be loaded as:
