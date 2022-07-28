@@ -5,7 +5,7 @@ Connectivity modeling and feature extraction of time series networks.
 The library currently provides the following functionality:
 
 #### Connectivity modeling
-- Pearson correlation (via maxumum likelihood and the Ledoit-Wolf shrinkage estimators)
+- Pearson correlation (via maximum likelihood and the Ledoit-Wolf shrinkage estimators)
 - Gaussian kernel
 - mutual information (via Kozachenko-Leonenko estimator)
 
