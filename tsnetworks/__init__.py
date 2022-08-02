@@ -17,7 +17,7 @@ from scipy.spatial import KDTree
 from scipy.stats import entropy
 
 import dionysus
-from scipy.spatial.distance import pdist
+from scipy.spatial.distance import pdist, squareform
 
 
 class Network():
@@ -50,9 +50,11 @@ class Network():
         return np.array_repr(self.adjacency.matrix)
 
     def __init_graph(self):
-        self.graph = nx.from_numpy_array(self.adjacency.matrix)
+        adjacency_no_loops = np.copy(self.adjacency.matrix)
+        np.fill_diagonal(adjacency_no_loops, 0)
+        self.graph = nx.from_numpy_array(adjacency_no_loops)
 
-    def correlation(self, estimator="maximum_likelihood", assume_centered=True):
+    def correlation(self, estimator="maximum_likelihood", assume_centered=True, threshold=None, absolute=True):
         """
         Set network connectivity matrix to 1 - |correlation|.
 
@@ -83,15 +85,22 @@ class Network():
             raise ValueError("Estimator should be 'maximum_likelihood' or 'ledoit_wolf'")
 
         R = cm.fit_transform(np.expand_dims(self.time_series.T, axis=0))[0]
-        R_inv = 1 - np.abs(R)
-        np.fill_diagonal(R_inv, 0)
 
-        self.adjacency = Matrix(R_inv)
+        if threshold is not None:
+            threshold_idx = R < threshold
+            R[threshold_idx] = 0
+
+        if absolute==True:
+            R_inv = 1 - np.abs(R)
+            np.fill_diagonal(R_inv, 0)
+            R = R_inv
+
+        self.adjacency = Matrix(R)
         self.__init_graph()
 
         return self
 
-    def gaussian_kernel(self):
+    def gaussian_kernel(self, threshold=None):
         """
         Set network connectivity matrix to the Gaussian kernel k = exp(-gamma(|x_i, x_j|^2))
         measuring the similarity between instances.
@@ -123,12 +132,17 @@ class Network():
         """
         
         K = rbf_kernel(self.time_series)
+
+        if threshold is not None:
+            threshold_idx = K < threshold
+            K[threshold_idx] = 0
+
         np.fill_diagonal(K, 0)
         self.adjacency = Matrix(K)
         self.__init_graph()
         return self
 
-    def mutual_information(self, n_neighbors=15):
+    def mutual_information(self, n_neighbors=15, threshold=None):
         """
         Set network connectivity matrix to the mutual information
         measuring the similarity between instances.
@@ -195,6 +209,10 @@ class Network():
             A[edge] = I(self.time_series.T[:,edge], n_neighbors)
 
         A = A + A.T
+
+        if threshold is not None:
+            threshold_idx = A < threshold
+            A[threshold_idx] = 0
             
         self.adjacency = Matrix(A)
         self.__init_graph()
@@ -433,7 +451,7 @@ class Network():
                                 
             return diagram
 
-        distances = pdist(self.adjacency.matrix)
+        distances = squareform((self.adjacency.matrix + self.adjacency.matrix.T) / 2)
         filtration = dionysus.fill_rips(distances, 2, np.inf)
 
         R = dionysus.homology_persistence(filtration)
